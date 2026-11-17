@@ -32,6 +32,9 @@ export const sddTrackerRouter = new Hono<{ Bindings: SddEnvBindings }>()
   .use('*', dualModeAuthMiddleware)
   // タスク・仕様進捗一覧取得 & 工数集計
   .get('/tasks', async (c) => {
+    if (!c.env.DB) {
+      return c.json({ success: true, tasks: [], mode: 'stateless' });
+    }
     const { results } = await c.env.DB.prepare(
       'SELECT * FROM sdd_tasks ORDER BY updated_at DESC'
     ).all();
@@ -40,31 +43,35 @@ export const sddTrackerRouter = new Hono<{ Bindings: SddEnvBindings }>()
   // 新規 SDD タスク登録
   .post('/tasks', zValidator('json', createSddTaskSchema), async (c) => {
     const data = c.req.valid('json');
-    await c.env.DB.prepare(
-      `INSERT INTO sdd_tasks (id, project_name, feature_name, assignee, spec_doc_path, design_status, impl_status, estimated_hours, actual_hours, blocker_tag)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-      .bind(
-        data.id,
-        data.projectName,
-        data.featureName,
-        data.assignee,
-        data.specDocPath ?? null,
-        data.designStatus,
-        data.implStatus,
-        data.estimatedHours,
-        data.actualHours,
-        data.blockerTag ?? null
+    if (c.env.DB) {
+      await c.env.DB.prepare(
+        `INSERT INTO sdd_tasks (id, project_name, feature_name, assignee, spec_doc_path, design_status, impl_status, estimated_hours, actual_hours, blocker_tag)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
-      .run();
-
+        .bind(
+          data.id,
+          data.projectName,
+          data.featureName,
+          data.assignee,
+          data.specDocPath ?? null,
+          data.designStatus,
+          data.implStatus,
+          data.estimatedHours,
+          data.actualHours,
+          data.blockerTag ?? null
+        )
+        .run();
+    }
     return c.json({ success: true, taskId: data.id }, 201);
   })
   // Obsidian docs/ YAML フロントマター一括同期 (Upsert)
   .post('/sync', zValidator('json', syncSpecsRequestSchema), async (c) => {
     const { items } = c.req.valid('json');
-    let syncedCount = 0;
+    if (!c.env.DB) {
+      return c.json({ success: true, syncedCount: items.length, mode: 'stateless' });
+    }
 
+    let syncedCount = 0;
     for (const item of items) {
       const designStatus = mapFrontmatterStatusToDesignStatus(item.status);
       await c.env.DB.prepare(
@@ -97,11 +104,13 @@ export const sddTrackerRouter = new Hono<{ Bindings: SddEnvBindings }>()
     const { taskId, provider, specMarkdown } = c.req.valid('json');
     const summary = await runSpecComplianceReview(c.env, provider, specMarkdown);
 
-    await c.env.DB.prepare(
-      `UPDATE sdd_tasks SET ai_review_summary = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
-    )
-      .bind(summary, taskId)
-      .run();
+    if (c.env.DB) {
+      await c.env.DB.prepare(
+        `UPDATE sdd_tasks SET ai_review_summary = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
+      )
+        .bind(summary, taskId)
+        .run();
+    }
 
     return c.json({ success: true, taskId, provider, summary });
   })
@@ -131,9 +140,9 @@ export const sddTrackerRouter = new Hono<{ Bindings: SddEnvBindings }>()
     }
 
     if (body.method === 'tools/call') {
-      const { results } = await c.env.DB.prepare(
-        'SELECT * FROM sdd_tasks ORDER BY updated_at DESC'
-      ).all();
+      const results = c.env.DB
+        ? (await c.env.DB.prepare('SELECT * FROM sdd_tasks ORDER BY updated_at DESC').all()).results
+        : [];
       return c.json({
         jsonrpc: '2.0',
         id: body.id ?? 1,

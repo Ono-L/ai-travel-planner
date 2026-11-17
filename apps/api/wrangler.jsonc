@@ -8,27 +8,9 @@
     "directory": "../web/dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application"
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "trip-splitter-db",
-      "database_id": "YOUR_D1_DATABASE_ID"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "BUCKET",
-      "bucket_name": "trip-splitter-assets"
-    }
-  ],
-  "analytics_engine_datasets": [
-    {
-      "binding": "ANALYTICS",
-      "dataset": "trip_splitter_logs"
-    }
-  ],
-  "triggers": {
-    "crons": ["0 3 * * *"]
   }
+  // D1 / R2 / Analytics Engine を本番有効化する場合は、各リソースを作成後に以下をアンコメントしてください
+  // "d1_databases": [{ "binding": "DB", "database_name": "trip-splitter-db", "database_id": "<作成したID>" }],
+  // "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "trip-splitter-assets" }],
+  // "analytics_engine_datasets": [{ "binding": "ANALYTICS", "dataset": "trip_splitter_logs" }]
 }
