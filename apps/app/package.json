@@ -1,0 +1,33 @@
+{
+  "name": "@trip-splitter/app",
+  "version": "0.1.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'lint @trip-splitter/app'"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.0.2",
+    "@tanstack/react-query": "^5.56.2",
+    "@trip-splitter/shared": "workspace:*",
+    "expo": "~51.0.28",
+    "expo-router": "~3.5.23",
+    "hono": "^4.6.3",
+    "lucide-react-native": "^0.441.0",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@trip-splitter/api": "workspace:*",
+    "@types/react": "~18.2.79",
+    "typescript": "^5.6.2"
+  }
+}

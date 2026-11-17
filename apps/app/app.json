@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "Trip Splitter",
+    "slug": "trip-splitter",
+    "version": "0.1.0",
+    "scheme": "tripsplitter",
+    "platforms": ["ios", "android", "web"],
+    "plugins": ["expo-router"]
+  }
+}

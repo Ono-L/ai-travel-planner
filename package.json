@@ -1,0 +1,23 @@
+{
+  "name": "ai-travel-planner",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Trip Splitter - AI Spec-Driven Travel Expense & Settlement Monorepo",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "turbo": "^2.1.0",
+    "typescript": "^5.6.2"
+  }
+}
