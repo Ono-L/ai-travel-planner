@@ -2,7 +2,7 @@
   "name": "ai-travel-planner",
   "version": "0.1.0",
   "private": true,
-  "description": "Trip Splitter - AI Spec-Driven Travel Expense & Settlement Monorepo",
+  "description": "SDD Progress Tracker & Portfolio - AI Spec-Driven Monorepo",
   "packageManager": "pnpm@9.12.0",
   "engines": {
     "node": ">=20.0.0",
@@ -13,7 +13,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "deploy:free": "pnpm --filter @trip-splitter/web build && pnpm --filter @trip-splitter/api deploy"
   },
   "devDependencies": {
     "prettier": "^3.3.3",

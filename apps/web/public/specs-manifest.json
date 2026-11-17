@@ -1,0 +1,172 @@
+{
+  "syncedAt": "2026-11-17T21:18:34.721Z",
+  "items": [
+    {
+      "id": "DOC-DOCS-01-REQIREMENTS-README-MD",
+      "title": "User Stories & Scenario Specifications",
+      "type": "document",
+      "status": "active",
+      "tags": [
+        "requirements"
+      ],
+      "filePath": "docs/01_Reqirements/README.md"
+    },
+    {
+      "id": "DOC-DOCS-01-REQUIREMENTS-SCREEN-SPEC-MD",
+      "title": "Screen Specifications (画面仕様書)",
+      "type": "requirements",
+      "status": "active",
+      "tags": [
+        "requirements/screen_spec",
+        "ui/ux",
+        "expo"
+      ],
+      "created": "2026-09-15",
+      "filePath": "docs/01_Requirements/screen_spec.md"
+    },
+    {
+      "id": "DOC-DOCS-01-REQUIREMENTS-USER-STORIES-MD",
+      "title": "User Stories & Scenarios",
+      "type": "requirements",
+      "status": "active",
+      "tags": [
+        "requirements/user-stories",
+        "domain/trip-splitter"
+      ],
+      "created": "2026-09-15",
+      "filePath": "docs/01_Requirements/user_stories.md"
+    },
+    {
+      "id": "DOC-DOCS-02-ARCHITECTURE-DATABASE-MD",
+      "title": "D1 Database Schema & ERD",
+      "type": "architecture",
+      "status": "active",
+      "tags": [
+        "architecture/database",
+        "cloudflare/d1",
+        "schema"
+      ],
+      "created": "2026-09-15",
+      "filePath": "docs/02_Architecture/database.md"
+    },
+    {
+      "id": "DOC-DOCS-02-ARCHITECTURE-SYSTEM-DESIGN-MD",
+      "title": "System Architecture & Infrastructure Design",
+      "type": "architecture",
+      "status": "active",
+      "tags": [
+        "architecture/system",
+        "cloudflare/workers",
+        "cloudflare/r2",
+        "cloudflare/d1",
+        "gemini"
+      ],
+      "created": "2026-09-15",
+      "filePath": "docs/02_Architecture/system_design.md"
+    },
+    {
+      "id": "DOC-DOCS-03-RULES-CODING-RULES-MD",
+      "title": "Coding Rules & Project Conventions",
+      "type": "rules",
+      "status": "active",
+      "tags": [
+        "rules/coding",
+        "typescript",
+        "expo",
+        "hono"
+      ],
+      "created": "2026-09-15",
+      "filePath": "docs/03_Rules/coding_rules.md"
+    },
+    {
+      "id": "DOC-DOCS-03-RULES-TECH-STACK-MD",
+      "title": "Tech Stack & Skill Matrix",
+      "type": "rules",
+      "status": "active",
+      "tags": [
+        "rules/tech-stack",
+        "architecture",
+        "dependencies"
+      ],
+      "created": "2026-09-15",
+      "filePath": "docs/03_Rules/tech_stack.md"
+    },
+    {
+      "id": "DOC-DOCS-04-DISCUSSIONS-PORTFOLIO-HISTORY-MD",
+      "title": "Project Evolution & Portfolio Log (開発履歴・意思決定記録)",
+      "type": "document",
+      "status": "active",
+      "tags": [
+        "portfolio/history",
+        "architecture/adr"
+      ],
+      "filePath": "docs/04_Discussions/portfolio_history.md"
+    },
+    {
+      "id": "DOC-DOCS-04-DISCUSSIONS-TBD-LIST-MD",
+      "title": "TBD List & Discussions Log",
+      "type": "discussion",
+      "status": "active",
+      "tags": [
+        "discussion/tbd",
+        "decision-log"
+      ],
+      "created": "2026-09-15",
+      "filePath": "docs/04_Discussions/tbd_list.md"
+    },
+    {
+      "id": "DOC-DOCS-CLAUDE-V5-MD",
+      "title": "CLAUDE-v5: AI Spec-Driven Development (SDD) Master Directive",
+      "type": "document",
+      "status": "active",
+      "tags": [
+        "rules/sdd",
+        "claude-v5",
+        "antigravity"
+      ],
+      "filePath": "docs/CLAUDE-v5.md"
+    },
+    {
+      "id": "DOC-DOCS-README-MD",
+      "title": "Welcome to your Obsidian Vault",
+      "type": "document",
+      "status": "active",
+      "tags": [],
+      "filePath": "docs/README.md"
+    },
+    {
+      "id": "DOC-DOCS-DESIGN-UI-DESIGN-MD",
+      "title": "Design & UI/UX Specifications",
+      "type": "document",
+      "status": "active",
+      "tags": [
+        "design/ui-ux",
+        "expo"
+      ],
+      "filePath": "docs/design/ui_design.md"
+    },
+    {
+      "id": "DOC-DOCS-SDD-TRACKER-SPEC-MD",
+      "title": "SDD Progress Tracker (個人開発・SDD 進捗 & AI レビュートラッカー) 仕様書",
+      "type": "document",
+      "status": "active",
+      "tags": [
+        "sdd/spec",
+        "mcp/remote-server",
+        "ai/hybrid-llm"
+      ],
+      "filePath": "docs/sdd-tracker/SPEC.md"
+    },
+    {
+      "id": "DOC-DOCS-SDD-TRACKER-PORTFOLIO-SPEC-MD",
+      "title": "エンジニア・ポートフォリオ画面 仕様書",
+      "type": "document",
+      "status": "active",
+      "tags": [
+        "sdd/spec",
+        "portfolio/web"
+      ],
+      "filePath": "docs/sdd-tracker/portfolio_spec.md"
+    }
+  ]
+}
