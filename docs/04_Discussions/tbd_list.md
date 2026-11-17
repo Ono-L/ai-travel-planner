@@ -88,3 +88,17 @@ related:
 > [!warning] 実装時の制約注意事項
 > 1. 上記 **1. 優先検討事項** に挙がっている TBD 項目について、勝手に独断で外部サービス（Clerk 等）を導入したり、未決定の API エンドポイントを生やすことは**禁止**します。
 > 2. TBD 項目の実装が必要になった場合は、事前にユーザー（人間）に選択肢を確認の上、本ドキュメントのステータスを `Resolved` に更新してからコード作成を開始してください。
+
+---
+
+## 5. アーキテクチャ方針変更ログ (Architecture Decision Record: ADR-001)
+
+> [!important] 2026-11-18 決定: モバイルネイティブアプリ公開から Web アプリ（PWA / Cloudflare Pages）へのピボット
+> - **背景・課題**:
+>   - Fase 1 として DevContainer 環境および Expo (React Native) + Hono (Cloudflare Workers) モノレポ基盤を構築し、実機（Expo Go Tunnel）での疎通検証まで完了。
+>   - 一方で、モバイルアプリストアへの一般公開には Apple Developer Program（年額 $99 USD）および Google Play Console（初回登録 $25 USD）の固定コストと審査工数が発生する。
+>   - また、旅行の割り勘・立替精算ユースケースでは「同行者に専用アプリをインストールさせるハードル（US-102 招待・ゲスト参加）」が高く、URL 共有だけで即座にブラウザから参加できる形態の方がプロダクト適性が高い。
+> - **決定事項**:
+>   1. **フェーズ1（Expo モバイル版）の履歴保全**: これまでに構築した Expo モバイル構成と仕様書一式はポートフォリオ資産として Git 履歴に完全保存する。
+>   2. **Web アプリケーションへの全面移行**: クライアント層を **Cloudflare Pages（Web / PWA）** へ移行し、公開・運用コスト完全無料（$0）で URL 共有のみで誰でも使える Web アプリとして開発を進める。
+>   3. **コア資産の100%継承**: バックエンド（`apps/api`: Hono + Cloudflare D1 / R2 / Analytics Engine + Gemini 1.5 Flash）および共通スキーマ（`packages/shared`: Zod + Hono RPC 型定義）はそのまま引き継ぐ。
