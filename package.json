@@ -14,7 +14,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "deploy:free": "pnpm --filter @trip-splitter/web build && pnpm --filter @trip-splitter/api deploy"
+    "deploy:free": "pnpm --filter @trip-splitter/web build && pnpm --filter @trip-splitter/api run deploy"
   },
   "devDependencies": {
     "prettier": "^3.3.3",
