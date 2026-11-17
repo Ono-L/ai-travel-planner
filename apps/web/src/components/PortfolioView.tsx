@@ -10,6 +10,13 @@ interface PortfolioViewProps {
   specCount: number;
 }
 
+const SDD_ARCHITECTURE_STEPS = [
+  { step: '01', title: 'Obsidian 仕様書', detail: 'docs/ 配下の Markdown (YAML) が唯一の正本' },
+  { step: '02', title: 'Vite 自動同期', detail: '保存と同時にフロントマターを解析し画面反映' },
+  { step: '03', title: 'ハイブリッド AI 監査', detail: 'Gemini 無料枠 / ローカル LLM を切替検証' },
+  { step: '04', title: 'Remote MCP & Edge', detail: 'Hono + Cloudflare Workers で全世界へ配信' },
+];
+
 export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCount }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -43,7 +50,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
               {PORTFOLIO_PROFILE.bio}
             </p>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 200 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 210 }}>
             <button
               onClick={onOpenDemo}
               style={{
@@ -77,7 +84,46 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
         </div>
       </section>
 
-      {/* 2. 技術スタック・スキルマトリクス */}
+      {/* 2. 仕様駆動開発（SDD）アーキテクチャパイプライン */}
+      <section
+        style={{
+          background: '#ffffff',
+          borderRadius: 12,
+          padding: 20,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        }}
+      >
+        <h3 style={{ margin: '0 0 12px', fontSize: 17 }}>仕様駆動開発（SDD）アーキテクチャ構成</h3>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: 12,
+          }}
+        >
+          {SDD_ARCHITECTURE_STEPS.map((item) => (
+            <div
+              key={item.step}
+              style={{
+                border: '1px solid #dbeafe',
+                background: '#f8fafc',
+                borderRadius: 10,
+                padding: 12,
+              }}
+            >
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#1d4ed8', marginBottom: 4 }}>
+                STEP {item.step}
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>
+                {item.title}
+              </div>
+              <div style={{ fontSize: 12, color: '#4b5563', lineHeight: 1.5 }}>{item.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. 技術スタック・スキルマトリクス */}
       <section
         style={{
           background: '#ffffff',
@@ -129,7 +175,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
         </div>
       </section>
 
-      {/* 3. 制作プロダクト & 技術的意思決定（ADR） */}
+      {/* 4. 制作プロダクト & 技術的意思決定（ADR） */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <h3 style={{ margin: 0, fontSize: 17 }}>制作プロダクト & アーキテクチャ実績</h3>
         {PROJECT_SHOWCASE.map((project) => (
@@ -199,6 +245,23 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
             </div>
           </article>
         ))}
+      </section>
+
+      {/* 5. セキュリティ & 品質設計サマリー */}
+      <section
+        style={{
+          background: '#ffffff',
+          borderRadius: 12,
+          padding: 18,
+          border: '1px solid #e5e7eb',
+        }}
+      >
+        <h3 style={{ margin: '0 0 8px', fontSize: 16 }}>セキュリティ・品質設計</h3>
+        <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
+          <li>OWASP LLM01 対策: 仕様書テキストの XML タグ隔離とサニタイズによるプロンプトインジェクション緩和</li>
+          <li>Zod 厳格バリデーション + Prepared Statement による SQL インジェクション防止と型安全性（strict: true）</li>
+          <li>環境変数（AUTH_MODE）によるローカル開発モードと本番 Bearer トークン保護モードの分離</li>
+        </ul>
       </section>
     </div>
   );

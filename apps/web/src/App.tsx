@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import type { LlmProvider, SpecManifestItem } from '@trip-splitter/shared';
+import type { DesignStatus, ImplStatus, LlmProvider, SpecManifestItem } from '@trip-splitter/shared';
 import { PortfolioView } from './components/PortfolioView.js';
+import { McpPlayground } from './components/McpPlayground.js';
 
 interface SddTaskItem {
   id: string;
   featureName: string;
   assignee: string;
   specDocPath: string;
-  designStatus: 'todo' | 'in_progress' | 'review_submitted' | 'approved';
-  implStatus: 'todo' | 'in_progress' | 'review_submitted' | 'completed' | 'blocked';
+  designStatus: DesignStatus;
+  implStatus: ImplStatus;
   estimatedHours: number;
   actualHours: number;
 }
@@ -36,7 +37,7 @@ const INITIAL_TASKS: SddTaskItem[] = [
   },
   {
     id: 'SPEC-103',
-    featureName: 'エンジニア・ポートフォリオ画面 & 無料枠 Workers Static Assets 対応',
+    featureName: 'エンジニア・ポートフォリオ画面 & Workers Static Assets 対応',
     assignee: '開発者',
     specDocPath: 'docs/sdd-tracker/portfolio_spec.md',
     designStatus: 'approved',
@@ -56,8 +57,11 @@ const STATUS_BADGE: Record<string, { bg: string; color: string }> = {
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'portfolio' | 'tracker'>('portfolio');
-  const [tasks] = useState<SddTaskItem[]>(INITIAL_TASKS);
+  const [tasks, setTasks] = useState<SddTaskItem[]>(INITIAL_TASKS);
+  const [newTaskTitle, setNewTaskTitle] = useState<string>('');
+  const [newTaskHours, setNewTaskHours] = useState<string>('2.0');
   const [docsSpecs, setDocsSpecs] = useState<SpecManifestItem[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [syncedAt, setSyncedAt] = useState<string>('');
   const [syncMessage, setSyncMessage] = useState<string>('');
   const [provider, setProvider] = useState<LlmProvider>('gemini');
@@ -83,6 +87,50 @@ export const App: React.FC = () => {
     void loadSpecsManifest();
   }, []);
 
+  const handleAddTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newTaskTitle.trim();
+    if (!trimmed) return;
+
+    const hours = Number.parseFloat(newTaskHours) || 1.0;
+    const newItem: SddTaskItem = {
+      id: `SPEC-${100 + tasks.length + 1}`,
+      featureName: trimmed,
+      assignee: '開発者',
+      specDocPath: 'docs/sdd-tracker/SPEC.md',
+      designStatus: 'todo',
+      implStatus: 'todo',
+      estimatedHours: hours,
+      actualHours: 0,
+    };
+
+    setTasks((prev) => [newItem, ...prev]);
+    setNewTaskTitle('');
+
+    try {
+      await fetch('/api/sdd/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: newItem.id,
+          projectName: 'sdd-tracker',
+          featureName: newItem.featureName,
+          assignee: newItem.assignee,
+          specDocPath: newItem.specDocPath,
+          estimatedHours: newItem.estimatedHours,
+        }),
+      });
+    } catch {
+      // 静的プレビュー時はローカル状態のみ更新
+    }
+  };
+
+  const handleUpdateImplStatus = (taskId: string, nextStatus: ImplStatus) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, implStatus: nextStatus } : t))
+    );
+  };
+
   const handleSyncToD1 = async () => {
     await loadSpecsManifest();
     try {
@@ -93,7 +141,7 @@ export const App: React.FC = () => {
       });
       if (res.ok) {
         const data = (await res.json()) as { syncedCount: number };
-        setSyncMessage(`D1 データベースへ ${data.syncedCount} 件の仕様書を同期しました`);
+        setSyncMessage(`同期完了: ${data.syncedCount} 件の仕様書を処理しました`);
       } else {
         setSyncMessage(`ローカルマニフェストを再読み込みしました (${docsSpecs.length} 件)`);
       }
@@ -120,6 +168,11 @@ export const App: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const filteredSpecs =
+    statusFilter === 'all'
+      ? docsSpecs
+      : docsSpecs.filter((d) => d.status.toLowerCase() === statusFilter);
 
   const totalEstimated = tasks.reduce((acc, t) => acc + t.estimatedHours, 0);
   const totalActual = tasks.reduce((acc, t) => acc + t.actualHours, 0);
@@ -177,7 +230,7 @@ export const App: React.FC = () => {
             工数: {totalActual.toFixed(1)}h / {totalEstimated.toFixed(1)}h
           </span>
           <button
-            onClick={handleSyncToD1}
+            onClick={() => void handleSyncToD1()}
             style={{ background: '#0f766e', color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
           >
             docs/ 同期 ({docsSpecs.length})
@@ -195,10 +248,85 @@ export const App: React.FC = () => {
         <PortfolioView onOpenDemo={() => setActiveTab('tracker')} specCount={docsSpecs.length} />
       ) : (
         <>
+          {/* 1. インタラクティブ SDD タスク管理 & 工数予実ボード */}
           <section style={{ background: '#ffffff', borderRadius: 12, padding: 18, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: 20, overflowX: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h2 style={{ margin: 0, fontSize: 17 }}>1. Obsidian 仕様書 (`docs/`) 自動同期ステータス</h2>
-              {syncedAt && <span style={{ fontSize: 12, color: '#6b7280' }}>最終同期: {new Date(syncedAt).toLocaleTimeString('ja-JP')}</span>}
+            <h2 style={{ margin: '0 0 12px', fontSize: 17 }}>1. 機能別 SDD タスク進捗 & 工数予実</h2>
+            <form onSubmit={(e) => void handleAddTask(e)} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+              <input
+                type="text"
+                placeholder="新しい機能・仕様タスク名を入力..."
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                style={{ flex: '1 1 240px', padding: '7px 10px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 13 }}
+              />
+              <input
+                type="number"
+                step="0.5"
+                min="0.5"
+                value={newTaskHours}
+                onChange={(e) => setNewTaskHours(e.target.value)}
+                style={{ width: 80, padding: '7px 10px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 13 }}
+              />
+              <button
+                type="submit"
+                style={{ background: '#1a56db', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                + タスク追加
+              </button>
+            </form>
+
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 580 }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                  <th style={{ padding: 8 }}>ID</th>
+                  <th style={{ padding: 8 }}>機能項目</th>
+                  <th style={{ padding: 8 }}>設計</th>
+                  <th style={{ padding: 8 }}>実装ステータス</th>
+                  <th style={{ padding: 8 }}>実績 / 見積</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((t) => (
+                  <tr key={t.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                    <td style={{ padding: 8, fontWeight: 600 }}>{t.id}</td>
+                    <td style={{ padding: 8 }}>{t.featureName}</td>
+                    <td style={{ padding: 8 }}>{t.designStatus}</td>
+                    <td style={{ padding: 8 }}>
+                      <select
+                        value={t.implStatus}
+                        onChange={(e) => handleUpdateImplStatus(t.id, e.target.value as ImplStatus)}
+                        style={{ padding: '4px 8px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 12 }}
+                      >
+                        <option value="todo">todo</option>
+                        <option value="in_progress">in_progress</option>
+                        <option value="review_submitted">review_submitted</option>
+                        <option value="completed">completed</option>
+                        <option value="blocked">blocked</option>
+                      </select>
+                    </td>
+                    <td style={{ padding: 8 }}>{t.actualHours}h / {t.estimatedHours}h</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          {/* 2. Obsidian 仕様書自動同期テーブル */}
+          <section style={{ background: '#ffffff', borderRadius: 12, padding: 18, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: 20, overflowX: 'auto' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <h2 style={{ margin: 0, fontSize: 17 }}>2. Obsidian 仕様書 (`docs/`) 自動同期ステータス</h2>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  style={{ padding: '4px 8px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 12 }}
+                >
+                  <option value="all">すべて ({docsSpecs.length})</option>
+                  <option value="active">active</option>
+                  <option value="draft">draft</option>
+                </select>
+                {syncedAt && <span style={{ fontSize: 12, color: '#6b7280' }}>最終同期: {new Date(syncedAt).toLocaleTimeString('ja-JP')}</span>}
+              </div>
             </div>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 560 }}>
               <thead>
@@ -210,7 +338,7 @@ export const App: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {docsSpecs.map((doc) => {
+                {filteredSpecs.map((doc) => {
                   const badge = STATUS_BADGE[doc.status.toLowerCase()] ?? STATUS_BADGE.draft;
                   return (
                     <tr key={doc.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
@@ -229,8 +357,9 @@ export const App: React.FC = () => {
             </table>
           </section>
 
+          {/* 3. ハイブリッド AI 仕様書監査 */}
           <section style={{ background: '#ffffff', borderRadius: 12, padding: 18, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
-            <h2 style={{ marginTop: 0, fontSize: 17 }}>2. ハイブリッド AI 仕様書監査 (Gemini 無料枠 / LM Studio / Ollama)</h2>
+            <h2 style={{ marginTop: 0, fontSize: 17 }}>3. ハイブリッド AI 仕様書監査 (Gemini 無料枠 / LM Studio / Ollama)</h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 12, alignItems: 'center' }}>
               <select
                 value={provider}
@@ -242,7 +371,7 @@ export const App: React.FC = () => {
                 <option value="local_ollama">Ollama (ローカル LLM: port 11434)</option>
               </select>
               <button
-                onClick={handleRunReview}
+                onClick={() => void handleRunReview()}
                 disabled={loading}
                 style={{ background: '#1a56db', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
               >
@@ -261,6 +390,8 @@ export const App: React.FC = () => {
               </div>
             )}
           </section>
+
+          <McpPlayground />
         </>
       )}
     </div>

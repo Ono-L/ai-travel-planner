@@ -42,3 +42,7 @@ related:
 ### 意思決定の理由（Why Web App?）
 - **ストア公開コストの最適化**: iOS / Android ネイティブアプリのストア公開に伴うランニングコスト（Apple Developer Program 年額 $99 USD 等）を排し、Cloudflare エコシステム（Pages + Workers + D1 + R2）の無料枠内でフルスタック運用を実現するため。
 - **ユーザー体験（UX）の向上**: 旅行メンバーへの招待時（US-102）にアプリインストールの手間をなくし、LINE 等で共有された URL を開くだけで即座に立替登録・精算確認ができる Web（PWA 対応）形態へ移行。
+
+### Phase 2 機能拡充ログ (2026-11-18)
+- **ポートフォリオ画面強化 (`apps/web/src/components/PortfolioView.tsx`)**: SDD パイプライン（Obsidian → Vite 同期 → ハイブリッド AI 監査 → Remote MCP & Edge）の視覚化と、OWASP LLM01 / Zod / AUTH_MODE のセキュリティ設計サマリーを追加。
+- **SDD 進捗トラッカー強化 (`apps/web/src/App.tsx`, `McpPlayground.tsx`)**: タスク新規追加フォーム、実装ステータス動的変更、仕様書ステータスフィルタ、および `POST /api/sdd/mcp` ライブ疎通テストパネルを実装。
