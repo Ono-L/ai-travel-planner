@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "sdd-tracker": {
+      "type": "http",
+      "url": "http://localhost:8787/api/sdd/mcp"
+    }
+  }
+}
