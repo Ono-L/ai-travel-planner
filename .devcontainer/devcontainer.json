@@ -1,0 +1,39 @@
+{
+  "name": "Trip Splitter (ai-travel-planner) SDD DevContainer",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "remoteUser": "node",
+  "forwardPorts": [8081, 8787],
+  "portsAttributes": {
+    "8081": {
+      "label": "Expo Metro Bundler",
+      "onAutoForward": "notify"
+    },
+    "8787": {
+      "label": "Cloudflare Workers (Hono API)",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "expo.vscode-expo-tools",
+        "bradlc.vscode-tailwindcss",
+        "bierner.markdown-mermaid",
+        "github.vscode-pull-request-github"
+      ],
+      "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  },
+  "postCreateCommand": "pnpm install"
+}

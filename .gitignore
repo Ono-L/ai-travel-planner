@@ -1,0 +1,29 @@
+# Environment Variables
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build & Output
+dist/
+build/
+.turbo/
+.expo/
+.wrangler/
+web-build/
+
+# Obsidian Cache & Workspace Settings
+.obsidian/
+docs/.obsidian/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+pnpm-debug.log*
+*.tsbuildinfo
