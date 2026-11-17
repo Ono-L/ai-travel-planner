@@ -11,7 +11,7 @@
     "lint": "echo 'lint @trip-splitter/api'"
   },
   "dependencies": {
-    "@google/genai": "^0.1.1",
+    "@google/genai": "^3.4.0",
     "@hono/zod-validator": "^0.4.1",
     "@trip-splitter/shared": "workspace:*",
     "hono": "^4.6.3",
