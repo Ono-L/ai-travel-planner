@@ -24,4 +24,4 @@ AI エージェント（Claude / Antigravity / Gemini）は、コードの設計
 1. **ハルシネーションの禁止**: `docs/03_Rules/tech_stack.md` に定義されていない外部ライブラリ（Redux, axios, Express 等）や Node.js 固有モジュール（`fs`, `path` 等）をバックエンド（Cloudflare Workers）に導入しないこと。
 2. **`any` 型の全面禁止**: TypeScript `strict: true` を遵守し、`@trip-splitter/shared` の Zod スキーマと `hono/client`（Hono RPC）でエンドツーエンドの型安全性を維持すること。
 3. **単一責任と言語規約**: 1ファイル200行以内を目安に UI とロジックを分離し、応答・解説・コード内コメントはすべて日本語で記述すること。
-4. **コミット規約**: Conventional Commits（`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`）に従うこと。
+4. **コミット規約**: Conventional Commits（`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`）に従い、**メッセージ本文は必ず日本語で記述すること**（例: `feat(web): SDD進捗ボードの初期画面を追加`）。
