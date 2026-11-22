@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { DesignStatus, ImplStatus, LlmProvider, SpecManifestItem } from '@trip-splitter/shared';
 import { PortfolioView } from './components/PortfolioView.js';
 import { McpPlayground } from './components/McpPlayground.js';
+import { LoginGate } from './components/LoginGate.js';
 
 interface SddTaskItem {
   id: string;
@@ -57,6 +58,9 @@ const STATUS_BADGE: Record<string, { bg: string; color: string }> = {
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'portfolio' | 'tracker'>('portfolio');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authConfigured, setAuthConfigured] = useState<boolean>(true);
+  const [authChecked, setAuthChecked] = useState<boolean>(false);
   const [tasks, setTasks] = useState<SddTaskItem[]>(INITIAL_TASKS);
   const [newTaskTitle, setNewTaskTitle] = useState<string>('');
   const [newTaskHours, setNewTaskHours] = useState<string>('2.0');
@@ -71,6 +75,32 @@ export const App: React.FC = () => {
   const [reviewResult, setReviewResult] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
+  const checkAuthStatus = async () => {
+    try {
+      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      if (!res.ok) {
+        setIsAuthenticated(false);
+        return;
+      }
+      const data = (await res.json()) as { authenticated?: boolean; configured?: boolean };
+      setIsAuthenticated(Boolean(data.authenticated));
+      setAuthConfigured(data.configured !== false);
+    } catch {
+      setIsAuthenticated(false);
+    } finally {
+      setAuthChecked(true);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } finally {
+      setIsAuthenticated(false);
+      setSyncMessage('');
+    }
+  };
+
   const loadSpecsManifest = async () => {
     try {
       const res = await fetch(`/specs-manifest.json?t=${Date.now()}`);
@@ -84,6 +114,7 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    void checkAuthStatus();
     void loadSpecsManifest();
   }, []);
 
@@ -108,9 +139,10 @@ export const App: React.FC = () => {
     setNewTaskTitle('');
 
     try {
-      await fetch('/api/sdd/tasks', {
+      const res = await fetch('/api/sdd/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           id: newItem.id,
           projectName: 'sdd-tracker',
@@ -120,6 +152,9 @@ export const App: React.FC = () => {
           estimatedHours: newItem.estimatedHours,
         }),
       });
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+      }
     } catch {
       // 静的プレビュー時はローカル状態のみ更新
     }
@@ -137,8 +172,13 @@ export const App: React.FC = () => {
       const res = await fetch('/api/sdd/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ items: docsSpecs }),
       });
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
       if (res.ok) {
         const data = (await res.json()) as { syncedCount: number };
         setSyncMessage(`同期完了: ${data.syncedCount} 件の仕様書を処理しました`);
@@ -156,8 +196,13 @@ export const App: React.FC = () => {
       const res = await fetch('/api/sdd/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ taskId: 'SPEC-101', provider, specMarkdown: specInput }),
       });
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
       const data = (await res.json()) as { summary?: string; error?: { message?: string } };
       setReviewResult(data.summary ?? data.error?.message ?? 'レビュー完了');
     } catch {
@@ -225,17 +270,25 @@ export const App: React.FC = () => {
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600 }}>
-            工数: {totalActual.toFixed(1)}h / {totalEstimated.toFixed(1)}h
-          </span>
-          <button
-            onClick={() => void handleSyncToD1()}
-            style={{ background: '#0f766e', color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
-          >
-            docs/ 同期 ({docsSpecs.length})
-          </button>
-        </div>
+        {isAuthenticated && (
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600 }}>
+              工数: {totalActual.toFixed(1)}h / {totalEstimated.toFixed(1)}h
+            </span>
+            <button
+              onClick={() => void handleSyncToD1()}
+              style={{ background: '#0f766e', color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            >
+              docs/ 同期 ({docsSpecs.length})
+            </button>
+            <button
+              onClick={() => void handleLogout()}
+              style={{ background: '#ffffff', color: '#374151', border: '1px solid #d1d5db', padding: '7px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            >
+              ログアウト
+            </button>
+          </div>
+        )}
       </nav>
 
       {syncMessage && (
@@ -246,6 +299,16 @@ export const App: React.FC = () => {
 
       {activeTab === 'portfolio' ? (
         <PortfolioView onOpenDemo={() => setActiveTab('tracker')} specCount={docsSpecs.length} />
+      ) : !authChecked ? (
+        <div style={{ padding: 24, textAlign: 'center', color: '#6b7280', fontSize: 13 }}>
+          認証状態を確認しています...
+        </div>
+      ) : !isAuthenticated ? (
+        <LoginGate
+          configured={authConfigured}
+          onAuthenticated={() => setIsAuthenticated(true)}
+          onBackToPortfolio={() => setActiveTab('portfolio')}
+        />
       ) : (
         <>
           {/* 1. インタラクティブ SDD タスク管理 & 工数予実ボード */}

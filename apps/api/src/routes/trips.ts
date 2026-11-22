@@ -1,3 +1,4 @@
+import type { AnalyticsEngineDataset, D1Database, R2Bucket } from '@cloudflare/workers-types';
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { createTripSchema } from '@trip-splitter/shared';

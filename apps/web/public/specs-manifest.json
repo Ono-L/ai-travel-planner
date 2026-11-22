@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-11-17T21:49:47.327Z",
+  "syncedAt": "2026-11-21T21:59:43.205Z",
   "items": [
     {
       "id": "DOC-DOCS-01-REQIREMENTS-README-MD",
@@ -125,6 +125,19 @@
         "antigravity"
       ],
       "filePath": "docs/CLAUDE-v5.md"
+    },
+    {
+      "id": "DOC-DOCS-DAILY-RESEARCH-2026-11-18-TRENDREPORT-MD",
+      "title": "2026-11-18 最新アプリ・収益化トレンド調査",
+      "type": "document",
+      "status": "active",
+      "tags": [
+        "research",
+        "app",
+        "monetization",
+        "trend"
+      ],
+      "filePath": "docs/Daily_Research/2026-11-18_TrendReport.md"
     },
     {
       "id": "DOC-DOCS-README-MD",

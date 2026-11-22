@@ -1,3 +1,4 @@
+import type { D1Database } from '@cloudflare/workers-types';
 import type { Context, Next } from 'hono';
 import type { LlmProvider } from '@trip-splitter/shared';
 
