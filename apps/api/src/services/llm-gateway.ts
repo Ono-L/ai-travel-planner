@@ -1,6 +1,7 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import type { Context, Next } from 'hono';
 import type { LlmProvider } from '@trip-splitter/shared';
+import { verifyAdminPassword } from './session-auth.js';
 
 export type SddEnvBindings = {
   DB: D1Database;
@@ -11,7 +12,7 @@ export type SddEnvBindings = {
   LOCAL_LLM_MODEL?: string;
 };
 
-// 1. デュアルモード認証ミドルウェア（ローカル開発時は認証スキップ、公開時は Bearer トークン検証）
+// 1. デュアルモード認証ミドルウェア（ローカル開発時は認証スキップ、公開時は Bearer トークンを定数時間比較）
 export const dualModeAuthMiddleware = async (
   c: Context<{ Bindings: SddEnvBindings }>,
   next: Next
@@ -22,9 +23,15 @@ export const dualModeAuthMiddleware = async (
     return;
   }
 
-  const authHeader = c.req.header('Authorization');
-  const expectedToken = c.env.API_BEARER_TOKEN;
-  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+  const authHeader = c.req.header('Authorization') ?? '';
+  const expectedToken = c.env.API_BEARER_TOKEN ?? '';
+  const providedToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  const isValid =
+    expectedToken.length > 0 &&
+    providedToken.length > 0 &&
+    (await verifyAdminPassword(providedToken, expectedToken));
+
+  if (!isValid) {
     return c.json(
       {
         success: false,
@@ -52,16 +59,23 @@ export const runSpecComplianceReview = async (
       return '[検証モード] GEMINI_API_KEY が未設定のためローカル静的チェックを実行しました: 受入条件(AC)・エラー系定義を確認済みです。';
     }
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${env.GEMINI_API_KEY}`,
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': env.GEMINI_API_KEY,
+        },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: systemInstruction }] },
           contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
         }),
+        signal: AbortSignal.timeout(15_000),
       }
     );
+    if (!res.ok) {
+      return `Gemini API 呼び出しエラー (HTTP ${res.status})`;
+    }
     const json = (await res.json()) as {
       candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
     };

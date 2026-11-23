@@ -126,8 +126,8 @@ export const PROJECT_SHOWCASE: ProjectShowcaseItem[] = [
       'Cloudflare Workers Static Assets によりフロントエンド（React + Vite）と Hono API を 1 Worker に統合し、CORS 排除とランニングコスト $0 運用を実現',
     ],
     qualityAndSecurity: [
-      'HttpOnly / SameSite=Lax の署名付きセッション Cookie 認証（/api/auth/*）で管理デモ画面を保護',
-      'OWASP LLM01 対策として、仕様書本文を XML タグ隔離・サニタイズしてから LLM へ渡す設計',
+      'HttpOnly / SameSite=Lax の HMAC-SHA256 署名付きセッション Cookie 認証（/api/auth/*）＋パスワード・Bearer トークンの定数時間比較',
+      'OWASP LLM01 対策（<spec_input> タグ隔離・サニタイズ）＋ Gemini API キーの x-goog-api-key ヘッダー送信とタイムアウト制御',
       'Zod 厳格バリデーション + Prepared Statement + TypeScript strict: true によるエンドツーエンド型安全性',
     ],
     techBadges: ['TypeScript', 'React 18', 'Vite', 'Hono v4', 'Cloudflare Workers', 'Cloudflare D1', 'Remote MCP', 'Hybrid LLM'],
@@ -155,8 +155,8 @@ export const PROJECT_SHOWCASE: ProjectShowcaseItem[] = [
     ],
     qualityAndSecurity: [
       'Discord Interactions の Ed25519 署名検証を実装し、不正リクエストを 401 で遮断（ALLOWED_GUILD_IDS による許可サーバー制限対応）',
-      '外部攻略サイトやゲーム本体へのスクレイピングを一切行わない自前ナレッジ完結型＆根拠不足時に推測回答を避けるハルシネーション抑制（出典見出し必須）',
-      'TypeScript strict: true（any 禁止）+ Vitest 5 テストスイート完備。Cloudflare 未ログインでもローカル JSON インデックスで検索検証が可能',
+      '外部スクレイピング禁止の自前ナレッジ完結型・モデル自動フォールバック・<user_question> タグ隔離・3 重ハルシネーション抑制（出典見出し必須）',
+      'TypeScript strict: true（any 禁止）+ Vitest 5 テストスイート（27 テスト）完備。Cloudflare 未ログインでもローカル JSON インデックスで検索検証が可能',
     ],
     techBadges: ['TypeScript', 'Cloudflare Workers', 'Hono', 'Cloudflare Vectorize', 'Cloudflare D1', 'Gemini 2.5 Flash', 'RAG', 'Vitest'],
     adrNote:

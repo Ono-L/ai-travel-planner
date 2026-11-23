@@ -226,6 +226,7 @@ export const App: React.FC = () => {
     <div style={{ maxWidth: 1120, margin: '0 auto', padding: '16px 14px 48px' }}>
       {/* ナビゲーションヘッダー */}
       <nav
+        className="no-print"
         style={{
           display: 'flex',
           flexWrap: 'wrap',

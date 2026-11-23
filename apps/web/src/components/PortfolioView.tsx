@@ -70,7 +70,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
               {PORTFOLIO_PROFILE.bio}
             </p>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 230 }}>
+          <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 230 }}>
             <button
               onClick={onOpenDemo}
               style={{
@@ -118,6 +118,21 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
                 {PORTFOLIO_PROFILE.contactLabel}
               </span>
             )}
+            <button
+              onClick={() => window.print()}
+              style={{
+                background: 'rgba(255,255,255,0.14)',
+                color: '#ffffff',
+                border: '1px solid rgba(255,255,255,0.32)',
+                padding: '8px 14px',
+                borderRadius: 10,
+                fontWeight: 600,
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              提出用 PDF を保存 / 印刷
+            </button>
           </div>
         </div>
 
@@ -209,7 +224,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
           <h2 style={{ margin: 0, fontSize: 18, color: '#111827' }}>
             制作プロダクト & アーキテクチャ実績 ({visibleProjects.length}件)
           </h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <div className="no-print" style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {CATEGORY_FILTERS.map((filter) => {
               const active = selectedCategory === filter.key;
               return (
@@ -419,7 +434,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
                   </span>
                 ))}
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+              <div className="no-print" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
                 {project.repoUrl && (
                   <a
                     href={project.repoUrl}

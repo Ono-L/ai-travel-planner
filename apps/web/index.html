@@ -4,6 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ono-L | エンジニア ポートフォリオ</title>
+    <style>
+      @media print {
+        body {
+          background: #ffffff !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .no-print {
+          display: none !important;
+        }
+        article,
+        section {
+          break-inside: avoid;
+          box-shadow: none !important;
+        }
+      }
+    </style>
   </head>
   <body style="margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #f9fafb; color: #111827;">
     <div id="root"></div>
