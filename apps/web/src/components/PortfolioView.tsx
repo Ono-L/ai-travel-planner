@@ -70,7 +70,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
               {PORTFOLIO_PROFILE.bio}
             </p>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 220 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 230 }}>
             <button
               onClick={onOpenDemo}
               style={{
@@ -93,13 +93,25 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
                 target="_blank"
                 rel="noreferrer"
                 style={{
-                  color: '#dbeafe',
-                  fontSize: 12,
-                  textAlign: 'center',
-                  textDecoration: 'underline',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255,255,255,0.28)',
+                  padding: '10px 16px',
+                  borderRadius: 10,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                 }}
               >
-                GitHub プロフィールを開く
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.04.13 3 .4c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+                GitHub プロフィールを見る ↗
               </a>
             ) : (
               <span style={{ color: '#bfdbfe', fontSize: 11, textAlign: 'center', lineHeight: 1.4 }}>
@@ -407,23 +419,46 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
                   </span>
                 ))}
               </div>
-              {project.hasLiveDemo && (
-                <button
-                  onClick={onOpenDemo}
-                  style={{
-                    background: '#1a56db',
-                    color: '#ffffff',
-                    border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: 7,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  デモタブを開く →
-                </button>
-              )}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+                {project.repoUrl && (
+                  <a
+                    href={project.repoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      background: '#0f172a',
+                      color: '#ffffff',
+                      padding: '6px 12px',
+                      borderRadius: 7,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    GitHub コードを見る ↗
+                  </a>
+                )}
+                {project.hasLiveDemo && (
+                  <button
+                    onClick={onOpenDemo}
+                    style={{
+                      background: '#1a56db',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: 7,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    デモタブを開く →
+                  </button>
+                )}
+              </div>
             </div>
           </article>
         ))}

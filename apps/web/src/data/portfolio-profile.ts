@@ -20,6 +20,7 @@ export type ProjectCategory = 'web_ai' | 'rag_bot' | 'iot_python';
 export interface ProjectShowcaseItem {
   id: string;
   repoName: string;
+  repoUrl: string;
   category: ProjectCategory;
   categoryLabel: string;
   name: string;
@@ -40,11 +41,11 @@ export interface ProjectShowcaseItem {
 }
 
 export const PORTFOLIO_PROFILE: PortfolioProfile = {
-  displayName: 'エンジニア ポートフォリオ（表示名未設定）',
+  displayName: 'Ono-L',
   roleTitle: 'Full-Stack / AI & Edge Systems Engineer',
   bio: '仕様駆動開発（SDD）と技術的意思決定（ADR）を軸に、Cloudflare エッジスタックによる Web アプリ・RAG 搭載 Discord Bot・Raspberry Pi 向け電子ペーパー IoT ダッシュボードまで領域横断で設計・実装しています。運用コスト最適化と型安全・セキュリティ設計を最初から組み込む開発を重視しています。',
-  githubUrl: '',
-  contactLabel: '氏名・GitHub・連絡先リンクは apps/web/src/data/portfolio-profile.ts で設定できます',
+  githubUrl: 'https://github.com/Ono-L',
+  contactLabel: 'GitHub にて公開リポジトリ・設計書・テストコードを閲覧できます',
   careerHighlights: [
     { label: '制作プロダクト', value: '4件 / 3リポジトリ', note: 'Web・RAG Bot・IoT/Python・Mobile' },
     { label: '主な得意領域', value: 'TypeScript / Python', note: 'strict 型安全 + Pydantic v2' },
@@ -109,6 +110,7 @@ export const PROJECT_SHOWCASE: ProjectShowcaseItem[] = [
   {
     id: 'sdd-tracker',
     repoName: 'ai-travel-planner',
+    repoUrl: 'https://github.com/Ono-L/ai-travel-planner',
     category: 'web_ai',
     categoryLabel: 'Web / AI・MCP',
     name: 'SDD Progress Tracker & Remote MCP',
@@ -136,6 +138,7 @@ export const PROJECT_SHOWCASE: ProjectShowcaseItem[] = [
   {
     id: 'gbf-beginner-bot',
     repoName: 'gbf-beginner-bot',
+    repoUrl: 'https://github.com/Ono-L/gbf-beginner-bot',
     category: 'rag_bot',
     categoryLabel: 'RAG / Discord Bot',
     name: 'gbf-beginner-bot（RAG 搭載 初心者支援 Discord Bot）',
@@ -162,6 +165,7 @@ export const PROJECT_SHOWCASE: ProjectShowcaseItem[] = [
   {
     id: 'epaper-dashboard',
     repoName: 'epaper-dashboard',
+    repoUrl: 'https://github.com/Ono-L/epaper-dashboard',
     category: 'iot_python',
     categoryLabel: 'IoT / Python・FastAPI',
     name: 'epaper-dashboard（電子ペーパー ローカルダッシュボード）',
@@ -192,6 +196,7 @@ export const PROJECT_SHOWCASE: ProjectShowcaseItem[] = [
   {
     id: 'trip-splitter',
     repoName: 'ai-travel-planner',
+    repoUrl: 'https://github.com/Ono-L/ai-travel-planner/tree/archive/trip-splitter-v1',
     category: 'web_ai',
     categoryLabel: 'Web / Mobile モノレポ',
     name: 'Trip Splitter（旅行立替・最適精算システム）',
