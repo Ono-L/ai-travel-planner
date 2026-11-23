@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  ENGINEERING_STRENGTHS,
   PORTFOLIO_PROFILE,
   PROJECT_SHOWCASE,
+  SECURITY_QUALITY_SUMMARY,
   SKILL_CATEGORIES,
+  type ProjectCategory,
 } from '../data/portfolio-profile.js';
 
 interface PortfolioViewProps {
@@ -11,57 +14,75 @@ interface PortfolioViewProps {
 }
 
 const SDD_ARCHITECTURE_STEPS = [
-  { step: '01', title: 'Obsidian 仕様書', detail: 'docs/ 配下の Markdown (YAML) が唯一の正本' },
-  { step: '02', title: 'Vite 自動同期', detail: '保存と同時にフロントマターを解析し画面反映' },
-  { step: '03', title: 'ハイブリッド AI 監査', detail: 'Gemini 無料枠 / ローカル LLM を切替検証' },
-  { step: '04', title: 'Remote MCP & Edge', detail: 'Hono + Cloudflare Workers で全世界へ配信' },
+  { step: '01', title: 'Obsidian 仕様書', detail: 'docs/ 配下の Markdown (YAML) を唯一の正本として管理' },
+  { step: '02', title: 'Vite 自動同期', detail: '保存と同時にフロントマターを解析し JSON マニフェスト生成' },
+  { step: '03', title: 'ハイブリッド AI 監査', detail: 'Gemini 無料枠 / ローカル LLM を切り替えて仕様の抜け漏れ検証' },
+  { step: '04', title: 'Remote MCP & Edge', detail: 'Hono + Cloudflare Workers Static Assets で無料枠一括配信' },
+];
+
+const CATEGORY_FILTERS: Array<{ key: 'all' | ProjectCategory; label: string }> = [
+  { key: 'all', label: 'すべて' },
+  { key: 'web_ai', label: 'Web / AI・MCP' },
+  { key: 'rag_bot', label: 'RAG / Bot' },
+  { key: 'iot_python', label: 'IoT / Python' },
 ];
 
 export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCount }) => {
+  const [selectedCategory, setSelectedCategory] = useState<'all' | ProjectCategory>('all');
+
+  const visibleProjects =
+    selectedCategory === 'all'
+      ? PROJECT_SHOWCASE
+      : PROJECT_SHOWCASE.filter((p) => p.category === selectedCategory);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
       {/* 1. プロフィール・ヒーローカード */}
       <section
         style={{
-          background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%)',
           color: '#ffffff',
-          borderRadius: 14,
-          padding: '24px 20px',
-          boxShadow: '0 4px 12px rgba(29, 78, 216, 0.2)',
+          borderRadius: 16,
+          padding: '26px 22px',
+          boxShadow: '0 6px 20px rgba(15, 23, 42, 0.18)',
         }}
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16, alignItems: 'center' }}>
-          <div style={{ flex: '1 1 280px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 18, alignItems: 'flex-start' }}>
+          <div style={{ flex: '1 1 320px' }}>
             <span
               style={{
                 display: 'inline-block',
-                background: 'rgba(255,255,255,0.18)',
-                padding: '3px 10px',
+                background: 'rgba(255,255,255,0.16)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                padding: '4px 12px',
                 borderRadius: 999,
                 fontSize: 12,
                 fontWeight: 600,
-                marginBottom: 8,
+                marginBottom: 10,
               }}
             >
               {PORTFOLIO_PROFILE.roleTitle}
             </span>
-            <h2 style={{ margin: '0 0 8px', fontSize: 22 }}>{PORTFOLIO_PROFILE.displayName}</h2>
-            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: '#e0e7ff' }}>
+            <h1 style={{ margin: '0 0 10px', fontSize: 24, lineHeight: 1.3 }}>
+              {PORTFOLIO_PROFILE.displayName}
+            </h1>
+            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: '#e2e8f0' }}>
               {PORTFOLIO_PROFILE.bio}
             </p>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 210 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 220 }}>
             <button
               onClick={onOpenDemo}
               style={{
                 background: '#ffffff',
                 color: '#1e3a8a',
                 border: 'none',
-                padding: '10px 16px',
-                borderRadius: 8,
+                padding: '11px 16px',
+                borderRadius: 10,
                 fontWeight: 700,
                 fontSize: 14,
                 cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
               }}
             >
               SDD ボードの実働デモを見る ({specCount}件)
@@ -71,29 +92,356 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
                 href={PORTFOLIO_PROFILE.githubUrl}
                 target="_blank"
                 rel="noreferrer"
-                style={{ color: '#dbeafe', fontSize: 12, textAlign: 'center' }}
+                style={{
+                  color: '#dbeafe',
+                  fontSize: 12,
+                  textAlign: 'center',
+                  textDecoration: 'underline',
+                }}
               >
                 GitHub プロフィールを開く
               </a>
             ) : (
-              <span style={{ color: '#bfdbfe', fontSize: 11, textAlign: 'center' }}>
+              <span style={{ color: '#bfdbfe', fontSize: 11, textAlign: 'center', lineHeight: 1.4 }}>
                 {PORTFOLIO_PROFILE.contactLabel}
               </span>
             )}
           </div>
         </div>
+
+        {/* 就活サマリー指標 */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 10,
+            marginTop: 20,
+            paddingTop: 18,
+            borderTop: '1px solid rgba(255,255,255,0.18)',
+          }}
+        >
+          {PORTFOLIO_PROFILE.careerHighlights.map((item) => (
+            <div
+              key={item.label}
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                borderRadius: 10,
+                padding: '10px 12px',
+              }}
+            >
+              <div style={{ fontSize: 11, color: '#bfdbfe', marginBottom: 2 }}>{item.label}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#ffffff', marginBottom: 2 }}>
+                {item.value}
+              </div>
+              <div style={{ fontSize: 11, color: '#dbeafe' }}>{item.note}</div>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* 2. 仕様駆動開発（SDD）アーキテクチャパイプライン */}
+      {/* 2. エンジニアとしての強み・開発スタンス */}
       <section
         style={{
           background: '#ffffff',
           borderRadius: 12,
           padding: 20,
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          border: '1px solid #e5e7eb',
         }}
       >
-        <h3 style={{ margin: '0 0 12px', fontSize: 17 }}>仕様駆動開発（SDD）アーキテクチャ構成</h3>
+        <h2 style={{ margin: '0 0 14px', fontSize: 17, color: '#111827' }}>
+          エンジニアとしての強み・開発スタンス
+        </h2>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: 14,
+          }}
+        >
+          {ENGINEERING_STRENGTHS.map((strength, idx) => (
+            <div
+              key={strength.title}
+              style={{
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: 10,
+                padding: 14,
+              }}
+            >
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#1d4ed8', marginBottom: 4 }}>
+                STRENGTH 0{idx + 1}
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
+                {strength.title}
+              </div>
+              <p style={{ margin: 0, fontSize: 13, color: '#475569', lineHeight: 1.6 }}>
+                {strength.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. 制作プロダクト & アーキテクチャ実績 */}
+      <section style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <h2 style={{ margin: 0, fontSize: 18, color: '#111827' }}>
+            制作プロダクト & アーキテクチャ実績 ({visibleProjects.length}件)
+          </h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {CATEGORY_FILTERS.map((filter) => {
+              const active = selectedCategory === filter.key;
+              return (
+                <button
+                  key={filter.key}
+                  onClick={() => setSelectedCategory(filter.key)}
+                  style={{
+                    background: active ? '#1e3a8a' : '#ffffff',
+                    color: active ? '#ffffff' : '#374151',
+                    border: active ? '1px solid #1e3a8a' : '1px solid #d1d5db',
+                    padding: '5px 12px',
+                    borderRadius: 999,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {filter.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {visibleProjects.map((project) => (
+          <article
+            key={project.id}
+            style={{
+              background: '#ffffff',
+              borderRadius: 14,
+              padding: 20,
+              boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+              border: '1px solid #e5e7eb',
+            }}
+          >
+            {/* カードヘッダー */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                gap: 8,
+                marginBottom: 10,
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span
+                    style={{
+                      background: '#f1f5f9',
+                      color: '#334155',
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      fontSize: 11,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {project.categoryLabel}
+                  </span>
+                  <span style={{ fontSize: 11, color: '#64748b', fontFamily: 'monospace' }}>
+                    repo: {project.repoName}
+                  </span>
+                </div>
+                <h3 style={{ margin: '0 0 3px', fontSize: 17, color: '#0f172a' }}>{project.name}</h3>
+                <div style={{ fontSize: 13, color: '#475569' }}>{project.subtitle}</div>
+              </div>
+              <span
+                style={{
+                  background: project.statusColor.bg,
+                  color: project.statusColor.text,
+                  padding: '3px 10px',
+                  borderRadius: 999,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {project.statusLabel}
+              </span>
+            </div>
+
+            {/* 背景・解決する課題 */}
+            <div
+              style={{
+                background: '#f8fafc',
+                borderRadius: 8,
+                padding: '10px 12px',
+                marginBottom: 14,
+                fontSize: 13,
+                color: '#334155',
+                lineHeight: 1.65,
+              }}
+            >
+              <strong style={{ color: '#0f172a' }}>背景・狙い：</strong>
+              {project.problemAndGoal}
+            </div>
+
+            {/* プレビュー画像（存在する場合） */}
+            {project.previewImage && (
+              <figure
+                style={{
+                  margin: '0 0 14px',
+                  padding: 12,
+                  background: '#f9fafb',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 10,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <img
+                  src={project.previewImage.src}
+                  alt={project.previewImage.alt}
+                  style={{
+                    maxWidth: '100%',
+                    width: 400,
+                    height: 'auto',
+                    borderRadius: 4,
+                    border: '1px solid #cbd5e1',
+                    imageRendering: 'pixelated',
+                  }}
+                />
+                <figcaption style={{ fontSize: 12, color: '#4b5563', textAlign: 'center' }}>
+                  {project.previewImage.caption}
+                </figcaption>
+              </figure>
+            )}
+
+            {/* 設計・実装の工夫 & 品質・セキュリティ */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gap: 14,
+                marginBottom: 12,
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#1e3a8a', marginBottom: 6 }}>
+                  アーキテクチャ・技術的工夫
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
+                  {project.architectureHighlights.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#0f766e', marginBottom: 6 }}>
+                  品質・セキュリティ・検証
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
+                  {project.qualityAndSecurity.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* ADR / 技術的意思決定 */}
+            {project.adrNote && (
+              <div
+                style={{
+                  marginBottom: 12,
+                  padding: '9px 12px',
+                  background: '#fffbeb',
+                  borderLeft: '3px solid #d97706',
+                  borderRadius: '0 6px 6px 0',
+                  fontSize: 12,
+                  color: '#92400e',
+                  lineHeight: 1.6,
+                }}
+              >
+                {project.adrNote}
+              </div>
+            )}
+
+            {/* フッター（技術バッジ＋ライブデモ導線） */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 10,
+                paddingTop: 10,
+                borderTop: '1px solid #f1f5f9',
+              }}
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {project.techBadges.map((badge) => (
+                  <span
+                    key={badge}
+                    style={{
+                      background: '#eff6ff',
+                      color: '#1d4ed8',
+                      padding: '3px 9px',
+                      borderRadius: 6,
+                      fontSize: 12,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {badge}
+                  </span>
+                ))}
+              </div>
+              {project.hasLiveDemo && (
+                <button
+                  onClick={onOpenDemo}
+                  style={{
+                    background: '#1a56db',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: 7,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  デモタブを開く →
+                </button>
+              )}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      {/* 4. 仕様駆動開発（SDD）アーキテクチャパイプライン */}
+      <section
+        style={{
+          background: '#ffffff',
+          borderRadius: 12,
+          padding: 20,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          border: '1px solid #e5e7eb',
+        }}
+      >
+        <h2 style={{ margin: '0 0 12px', fontSize: 17, color: '#111827' }}>
+          仕様駆動開発（SDD）アーキテクチャ構成（本アプリの実働仕組み）
+        </h2>
         <div
           style={{
             display: 'grid',
@@ -123,20 +471,23 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
         </div>
       </section>
 
-      {/* 3. 技術スタック・スキルマトリクス */}
+      {/* 5. 技術スタック・スキルマトリクス */}
       <section
         style={{
           background: '#ffffff',
           borderRadius: 12,
           padding: 20,
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          border: '1px solid #e5e7eb',
         }}
       >
-        <h3 style={{ margin: '0 0 14px', fontSize: 17 }}>技術スタック・開発環境</h3>
+        <h2 style={{ margin: '0 0 14px', fontSize: 17, color: '#111827' }}>
+          技術スタック・開発環境（全プロジェクト横断）
+        </h2>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
             gap: 14,
           }}
         >
@@ -175,93 +526,45 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onOpenDemo, specCo
         </div>
       </section>
 
-      {/* 4. 制作プロダクト & 技術的意思決定（ADR） */}
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <h3 style={{ margin: 0, fontSize: 17 }}>制作プロダクト & アーキテクチャ実績</h3>
-        {PROJECT_SHOWCASE.map((project) => (
-          <article
-            key={project.id}
-            style={{
-              background: '#ffffff',
-              borderRadius: 12,
-              padding: 20,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-              border: '1px solid #e5e7eb',
-            }}
-          >
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
-              <h4 style={{ margin: 0, fontSize: 16, color: '#111827' }}>{project.name}</h4>
-              <span
-                style={{
-                  background: project.statusColor.bg,
-                  color: project.statusColor.text,
-                  padding: '2px 10px',
-                  borderRadius: 999,
-                  fontSize: 12,
-                  fontWeight: 600,
-                }}
-              >
-                {project.statusLabel}
-              </span>
-            </div>
-            <p style={{ margin: '0 0 12px', fontSize: 14, color: '#4b5563', lineHeight: 1.6 }}>
-              {project.summary}
-            </p>
-            <ul style={{ margin: '0 0 12px', paddingLeft: 18, fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
-              {project.architectureHighlights.map((point) => (
-                <li key={point}>{point}</li>
-              ))}
-            </ul>
-            {project.adrNote && (
-              <div
-                style={{
-                  marginBottom: 12,
-                  padding: '8px 12px',
-                  background: '#fffbeb',
-                  borderLeft: '3px solid #d97706',
-                  fontSize: 12,
-                  color: '#92400e',
-                }}
-              >
-                {project.adrNote}
-              </div>
-            )}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {project.techBadges.map((badge) => (
-                <span
-                  key={badge}
-                  style={{
-                    background: '#eff6ff',
-                    color: '#1d4ed8',
-                    padding: '2px 8px',
-                    borderRadius: 6,
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
-                >
-                  {badge}
-                </span>
-              ))}
-            </div>
-          </article>
-        ))}
-      </section>
-
-      {/* 5. セキュリティ & 品質設計サマリー */}
+      {/* 6. セキュリティ & 品質設計サマリー */}
       <section
         style={{
           background: '#ffffff',
           borderRadius: 12,
-          padding: 18,
+          padding: 20,
           border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
         }}
       >
-        <h3 style={{ margin: '0 0 8px', fontSize: 16 }}>セキュリティ・品質設計</h3>
-        <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
-          <li>OWASP LLM01 対策: 仕様書テキストの XML タグ隔離とサニタイズによるプロンプトインジェクション緩和</li>
-          <li>Zod 厳格バリデーション + Prepared Statement による SQL インジェクション防止と型安全性（strict: true）</li>
-          <li>環境変数（AUTH_MODE）によるローカル開発モードと本番 Bearer トークン保護モードの分離</li>
-        </ul>
+        <h2 style={{ margin: '0 0 12px', fontSize: 17, color: '#111827' }}>
+          セキュリティ・品質設計（プロジェクト共通基準）
+        </h2>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: 12,
+          }}
+        >
+          {SECURITY_QUALITY_SUMMARY.map((item) => (
+            <div
+              key={item.title}
+              style={{
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: 10,
+                padding: 14,
+              }}
+            >
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
+                {item.title}
+              </div>
+              <p style={{ margin: 0, fontSize: 12.5, color: '#475569', lineHeight: 1.6 }}>
+                {item.detail}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );
